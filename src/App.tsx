@@ -135,7 +135,7 @@ const Section = ({ children, className = "", id = "" }: { children: React.ReactN
   </section>
 );
 
-const ButtonOrder = ({ className = "", fullWidth = true }: { className?: string, fullWidth?: boolean }) => {
+const ButtonOrder = ({ className = "", fullWidth = true, href = "https://ginseng-commande.vercel.app?quantite=1" }: { className?: string, fullWidth?: boolean, href?: string }) => {
   return (
     <div className={`flex flex-col items-center ${fullWidth ? 'w-full' : ''} ${className}`}>
       <div className="animate-pulse mb-3 bg-brand-gold/10 border border-brand-gold/30 px-4 py-1.5 rounded-full">
@@ -144,7 +144,7 @@ const ButtonOrder = ({ className = "", fullWidth = true }: { className?: string,
         </span>
       </div>
       <a
-        href={NEW_ORDER_LINK}
+        href={href}
         className={`
           group relative flex flex-col items-center justify-center
           bg-gradient-to-b from-[#166534] to-[#14532d] 
@@ -188,10 +188,9 @@ export default function App() {
       {/* HEADER */}
       <header className="sticky top-0 z-40 bg-black/90 backdrop-blur-md border-b border-white/10 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded bg-brand-red flex items-center justify-center font-black text-white">AS</div>
-          <span className="font-black text-lg tracking-wider text-brand-gold uppercase">African Solution</span>
+          <span className="font-black text-lg tracking-wider text-brand-gold uppercase">SOLUTION AFRICAINE</span>
         </div>
-        <a href={NEW_ORDER_LINK} className="bg-gradient-to-r from-[#166534] to-[#14532d] border border-[#4ade80]/30 text-white px-4 py-2 rounded-lg shadow-lg animate-breathe font-bold text-xs uppercase tracking-wider flex items-center gap-2">
+        <a href="https://ginseng-commande.vercel.app" className="bg-gradient-to-r from-[#166534] to-[#14532d] border border-[#4ade80]/30 text-white px-4 py-2 rounded-lg shadow-lg animate-breathe font-bold text-xs uppercase tracking-wider flex items-center gap-2">
           🛒 Commander
         </a>
       </header>
@@ -295,9 +294,11 @@ export default function App() {
             African Solution Ginseng Tea
           </div>
 
-          <div className="w-full relative aspect-video max-w-lg mx-auto mb-10 rounded-lg overflow-hidden border border-brand-gold shadow-2xl bg-cover flex flex-col items-center justify-center font-bold text-white uppercase" style={{ backgroundImage: "linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1596715094246-871d3466f28a?auto=format&fit=crop&q=80&w=800')" }}>
-            <h3 className="text-2xl font-serif text-brand-gold mb-2 tracking-widest">Extrait Pur de Ginseng</h3>
-            <p className="text-sm text-gray-300 tracking-[2px]">[ Boîte de Thé ]</p>
+          <div className="w-full relative aspect-video max-w-lg mx-auto mb-10 rounded-lg overflow-hidden border border-brand-gold shadow-[0_0_30px_rgba(212,175,55,0.4)] bg-cover flex flex-col items-center justify-center font-bold text-white uppercase group" style={{ backgroundImage: "linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1596715094246-871d3466f28a?auto=format&fit=crop&q=80&w=800')" }}>
+            <div className="absolute inset-0 bg-brand-gold/10 mix-blend-overlay animate-pulse"></div>
+            <div className="absolute top-0 left-0 bg-gradient-to-r from-transparent via-brand-gold/30 to-transparent w-full h-full animate-shimmer" />
+            <h3 className="text-2xl font-serif text-brand-gold mb-2 tracking-widest relative z-10 drop-shadow-md">Extrait Pur de Ginseng</h3>
+            <p className="text-sm text-gray-300 tracking-[2px] relative z-10 drop-shadow-md">[ Boîte de Thé ]</p>
           </div>
 
           <p className="text-center text-xl md:text-2xl font-medium leading-relaxed max-w-2xl text-gray-200">
@@ -327,9 +328,6 @@ export default function App() {
               </div>
             </div>
           ))}
-        </div>
-        <div className="mt-12 w-full max-w-md mx-auto">
-          <ButtonOrder />
         </div>
       </Section>
 
@@ -374,27 +372,22 @@ export default function App() {
         <TestimonialSlider />
       </Section>
 
-      {/* EXPERT SECTION */}
-      <Section className="bg-brand-dark border-y border-[#333]">
-        <div className="flex flex-col md:flex-row items-center gap-8 lg:gap-12 w-full">
-          <div className="w-48 h-48 md:w-64 md:h-64 rounded-full overflow-hidden border-4 border-brand-gold/30 shrink-0 mx-auto">
-            <img 
-              src="https://images.unsplash.com/photo-1537213459972-e1d871d3a681?q=80&w=600&auto=format&fit=crop" 
-              alt="Expert santé" 
-              className="w-full h-full object-cover"
-            />
+      {/* EXPERT SECTION (VIDEO) */}
+      <Section id="video-expert" className="bg-brand-dark border-y border-[#333]">
+        <SectionTitle subtitle="Ce que les professionnels de santé disent du Ginseng">
+          L'AVIS DES EXPERTS
+        </SectionTitle>
+        <div className="w-full relative aspect-video max-w-3xl mx-auto rounded-2xl overflow-hidden border-2 border-brand-gold shadow-[0_0_30px_rgba(212,175,55,0.3)] bg-[#050505] flex flex-col items-center justify-center font-bold group mt-8">
+          <div className="absolute inset-0 bg-brand-gold/5 mix-blend-overlay animate-pulse"></div>
+          <div className="absolute top-0 left-0 bg-gradient-to-r from-transparent via-brand-gold/20 to-transparent w-full h-full animate-shimmer" />
+          
+          <div className="w-20 h-20 bg-brand-gold/20 rounded-full flex items-center justify-center mb-6 transition-transform group-hover:scale-110 relative z-10 border border-brand-gold/50 shadow-[0_0_20px_rgba(212,175,55,0.5)]">
+             <Play className="w-10 h-10 text-brand-gold fill-brand-gold ml-2" />
           </div>
-          <div className="text-center md:text-left">
-             <div className="flex items-center justify-center md:justify-start gap-2 mb-4 text-brand-gold">
-               <Award className="w-5 h-5" />
-               <h3 className="font-bold uppercase tracking-wide">Naturel & Efficace</h3>
-             </div>
-             <p className="text-xl leading-relaxed text-gray-300 italic mb-6">
-                "Le Ginseng est reconnu scientifiquement pour sa capacité à améliorer la circulation sanguine, booster la testostérone naturelle et réduire drastiquement la fatigue liée au stress. C'est le bouclier naturel de l'homme moderne."
-             </p>
-             <p className="font-bold text-white uppercase tracking-wider">Le choix des hommes forts</p>
-          </div>
+          
+          <p className="text-brand-gold text-lg md:text-xl uppercase tracking-widest relative z-10 px-4 text-center">Témoignage Vidéo — Dr. Expert Santé</p>
         </div>
+        <p className="text-center text-[#888] text-sm mt-6 uppercase tracking-widest">Vidéo disponible prochainement</p>
       </Section>
 
       {/* PRICING / OFFERS */}
@@ -412,7 +405,7 @@ export default function App() {
               <li className="flex items-center gap-2 text-sm"><CheckCircle2 className="w-4 h-4 text-brand-red" /> regain d'énergie initial</li>
               <li className="flex items-center gap-2 text-sm"><CheckCircle2 className="w-4 h-4 text-brand-red" /> diminution de la fatigue</li>
             </ul>
-            <ButtonOrder />
+            <ButtonOrder href="https://ginseng-commande.vercel.app?quantite=1" />
           </div>
 
           {/* Pack 2 - Highlight */}
@@ -430,7 +423,7 @@ export default function App() {
               <li className="flex items-center gap-2 text-sm font-medium"><CheckCircle2 className="w-4 h-4 text-brand-gold" /> Vitalité constante toute la journée</li>
               <li className="flex items-center gap-2 text-sm font-medium"><CheckCircle2 className="w-4 h-4 text-brand-gold" /> Effets prolongés</li>
             </ul>
-            <ButtonOrder />
+            <ButtonOrder href="https://ginseng-commande.vercel.app?quantite=2" />
           </div>
 
           {/* Pack 3 */}
@@ -445,7 +438,7 @@ export default function App() {
               <li className="flex items-center gap-2 text-sm"><CheckCircle2 className="w-4 h-4 text-brand-red" /> Énergie d'un homme de 20 ans</li>
               <li className="flex items-center gap-2 text-sm"><CheckCircle2 className="w-4 h-4 text-brand-red" /> Système immunitaire blindé</li>
             </ul>
-            <ButtonOrder />
+            <ButtonOrder href="https://ginseng-commande.vercel.app?quantite=3" />
           </div>
         </div>
       </Section>
@@ -453,11 +446,10 @@ export default function App() {
       {/* FOOTER */}
       <footer className="bg-black py-8 border-t border-white/10 text-center px-4 mb-20 md:mb-0 mt-10">
         <div className="flex items-center justify-center gap-2 mb-4 grayscale opacity-50">
-          <div className="w-6 h-6 rounded bg-brand-red flex items-center justify-center font-black text-white text-xs">AS</div>
-          <span className="font-bold tracking-wider uppercase">African Solution</span>
+          <span className="font-bold tracking-wider uppercase text-brand-gold">SOLUTION AFRICAINE</span>
         </div>
         <p className="text-sm text-gray-500">Service certifié - Livraison confidentielle en main propre.</p>
-        <p className="text-xs text-gray-600 mt-2">© {new Date().getFullYear()} African Solution. Tous droits réservés.</p>
+        <p className="text-xs text-gray-600 mt-2">© {new Date().getFullYear()} SOLUTION AFRICAINE. Tous droits réservés.</p>
       </footer>
 
       {/* FLOATING MOBILE CTA */}
@@ -467,7 +459,7 @@ export default function App() {
       
       {/* FLOATING DESKTOP BUTTON */}
       <a 
-        href={NEW_ORDER_LINK} 
+        href="https://ginseng-commande.vercel.app?quantite=1" 
         target="_blank"
         rel="noopener noreferrer"
         className="hidden md:flex fixed bottom-8 right-8 z-50 bg-gradient-to-r from-[#166534] to-[#14532d] border border-[#4ade80]/30 text-white px-8 py-4 rounded-[16px] shadow-[0_6px_0_#064e3b,0_15px_30px_rgba(22,101,52,0.4)] hover:translate-y-[2px] hover:shadow-[0_4px_0_#064e3b,0_10px_20px_rgba(22,101,52,0.4)] active:translate-y-[6px] active:shadow-[0_0px_0_#064e3b,0_0px_0_rgba(22,101,52,0)] transition-all animate-breathe font-black text-xl uppercase tracking-widest items-center gap-3 overflow-hidden group"
