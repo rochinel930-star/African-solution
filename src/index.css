@@ -9,6 +9,18 @@
   --color-wa-bubble: #E2FFC7;
   --font-sans: "Inter", sans-serif;
   --font-serif: "Playfair Display", serif;
+  --animate-shimmer: shimmer 2.5s infinite linear;
+  --animate-breathe: breathe 2s infinite ease-in-out;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-150%) skewX(-15deg); }
+  100% { transform: translateX(250%) skewX(-15deg); }
+}
+
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
 }
 
 @layer utilities {

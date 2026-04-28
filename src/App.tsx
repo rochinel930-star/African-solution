@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { 
   Leaf, 
   Zap, 
@@ -10,13 +10,123 @@ import {
   CheckCircle2,
   ChevronRight,
   TrendingUp,
-  Award
+  Award,
+  Play,
+  Pause
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 // --- Constants ---
 const WA_NUMBER = "+242061151490";
-const WA_LINK = `https://wa.me/${WA_NUMBER}?text=Bonjour%20African%20Solution,%20je%20souhaite%20commander%20le%20Th%C3%A9%20au%20Ginseng.`;
+const NEW_ORDER_LINK = "https://ginseng-commande.vercel.app";
+
+const TESTIMONIALS = [
+  { name: "Marc, 34 ans", city: "Brazzaville", text: "J'étais toujours fatigué après le travail. Depuis que je prends ce thé, j'ai retrouvé mon énergie de jeunesse.", rating: 5 },
+  { name: "Jean-Claude, 42 ans", city: "Kinshasa", text: "Très efficace. Je le recommande publiquement à tous les hommes qui ressentent une baisse de régime.", rating: 5 },
+  { name: "Eric, 39 ans", city: "Pointe-Noire", text: "Le goût est agréable et les effets sont réels. J'ai repris confiance en moi, fini la honte.", rating: 5 },
+  { name: "Fabrice, 48 ans", city: "Dolisie", text: "C'est devenu ma routine du matin. Ça m'aide énormément pour la concentration et le physique.", rating: 4 }
+];
+
+const TestimonialSlider = () => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const scrollToNext = useCallback(() => {
+    if (scrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+      if (scrollLeft + clientWidth >= scrollWidth - 10) {
+        scrollRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        const itemWidth = scrollRef.current.children[0]?.clientWidth || clientWidth;
+        scrollRef.current.scrollBy({ left: itemWidth, behavior: 'smooth' });
+      }
+    }
+  }, []);
+
+  const scrollToPrev = useCallback(() => {
+    if (scrollRef.current) {
+      const { scrollLeft, clientWidth } = scrollRef.current;
+      if (scrollLeft <= 0) {
+        scrollRef.current.scrollTo({ left: scrollRef.current.scrollWidth, behavior: 'smooth' });
+      } else {
+        const itemWidth = scrollRef.current.children[0]?.clientWidth || clientWidth;
+        scrollRef.current.scrollBy({ left: -itemWidth, behavior: 'smooth' });
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval>;
+    if (isAutoPlaying) {
+      interval = setInterval(() => {
+        scrollToNext();
+      }, 5000);
+    }
+    return () => clearInterval(interval);
+  }, [isAutoPlaying, scrollToNext]);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    // Disable autoplay when user interacts via keyboard
+    if (e.key === 'ArrowLeft') {
+      setIsAutoPlaying(false);
+      scrollToPrev();
+    } else if (e.key === 'ArrowRight') {
+      setIsAutoPlaying(false);
+      scrollToNext();
+    }
+  };
+
+  return (
+    <div 
+      className="relative w-full outline-none focus-visible:ring-2 focus-visible:ring-brand-gold rounded-[24px]"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+      aria-label="Testimonials slider. Use left and right arrow keys to navigate."
+    >
+      <div 
+        ref={scrollRef}
+        className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar space-x-4 pb-8 -mx-4 px-4 focus:outline-none"
+      >
+        {TESTIMONIALS.map((item, i) => (
+          <div key={i} className="min-w-[85vw] md:min-w-[350px] snap-center bg-brand-dark border border-[#333] p-6 rounded-[24px] flex-shrink-0 relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-4 opacity-5">
+              <MessageCircle className="w-20 h-20" />
+            </div>
+            <div className="flex text-brand-gold mb-3">
+              {[...Array(item.rating)].map((_, j) => <StarIcon key={j} />)}
+            </div>
+            <p className="text-gray-300 italic mb-6 relative z-10 font-medium leading-relaxed">
+              "{item.text}"
+            </p>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-brand-red rounded-full flex items-center justify-center font-bold font-serif text-white">
+                {item.name.charAt(0)}
+              </div>
+              <div>
+                <p className="font-bold text-white">{item.name}</p>
+                <p className="text-sm text-gray-500">{item.city}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      
+      {/* Play/Pause Button */}
+      <div className={`absolute top-[40%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'} z-20`}>
+        <button 
+          onClick={() => setIsAutoPlaying(!isAutoPlaying)}
+          className="bg-brand-gold/90 text-brand-black p-4 rounded-full shadow-xl hover:scale-110 transition-transform backdrop-blur-sm cursor-pointer border-2 border-brand-gold/50 flex outline-none focus-visible:ring-4 focus-visible:ring-white"
+          aria-label={isAutoPlaying ? "Pause autoplay" : "Start autoplay"}
+        >
+          {isAutoPlaying ? <Pause className="w-8 h-8 fill-brand-black" /> : <Play className="w-8 h-8 fill-brand-black" />}
+        </button>
+      </div>
+    </div>
+  );
+};
 
 // --- UI Components ---
 const Section = ({ children, className = "", id = "" }: { children: React.ReactNode, className?: string, id?: string }) => (
@@ -25,20 +135,40 @@ const Section = ({ children, className = "", id = "" }: { children: React.ReactN
   </section>
 );
 
-const ButtonWA = ({ text, className = "", fullWidth = true, variant = "wa" }: { text: string, className?: string, fullWidth?: boolean, variant?: "wa" | "red" }) => {
-  const baseStyle = "flex items-center justify-center gap-2 font-bold transition-transform active:scale-95 uppercase tracking-wide text-white text-center";
-  const waStyle = "bg-[#25D366] hover:bg-[#1ebd57] py-3 px-6 rounded-full";
-  const redStyle = "bg-brand-red hover:bg-[#b30000] py-3 px-6 rounded-lg tracking-[1px] font-[800]";
+const ButtonOrder = ({ className = "", fullWidth = true }: { className?: string, fullWidth?: boolean }) => {
   return (
-    <a 
-      href={WA_LINK} 
-      target="_blank" 
-      rel="noopener noreferrer"
-      className={`${baseStyle} ${variant === "wa" ? waStyle : redStyle} ${fullWidth ? 'w-full' : 'px-8'} ${className}`}
-    >
-      {variant === "wa" && <MessageCircle className="w-5 h-5 animate-pulse" />}
-      {text}
-    </a>
+    <div className={`flex flex-col items-center ${fullWidth ? 'w-full' : ''} ${className}`}>
+      <div className="animate-pulse mb-3 bg-brand-gold/10 border border-brand-gold/30 px-4 py-1.5 rounded-full">
+        <span className="text-brand-gold text-[10px] md:text-xs font-bold uppercase tracking-widest drop-shadow-md text-center block">
+          ⚡ Stock limité — Commandez aujourd'hui !
+        </span>
+      </div>
+      <a
+        href={NEW_ORDER_LINK}
+        className={`
+          group relative flex flex-col items-center justify-center
+          bg-gradient-to-b from-[#166534] to-[#14532d] 
+          hover:from-[#15803d] hover:to-[#166534]
+          border border-[#4ade80]/30
+          text-white rounded-[16px] 
+          shadow-[0_8px_0_#064e3b,0_15px_30px_rgba(22,101,52,0.4)]
+          hover:shadow-[0_5px_0_#064e3b,0_10px_20px_rgba(22,101,52,0.4)]
+          hover:translate-y-[3px] transition-all duration-200
+          active:shadow-[0_0px_0_#064e3b,0_0px_0px_rgba(22,101,52,0)]
+          active:translate-y-[8px]
+          px-4 py-4 md:px-6 overflow-hidden animate-breathe
+          ${fullWidth ? 'w-full' : 'px-10'}
+        `}
+      >
+        <div className="absolute top-0 left-0 bg-gradient-to-r from-transparent via-white/30 to-transparent w-full h-full animate-shimmer" />
+        <span className="font-black text-lg md:text-2xl drop-shadow-md mb-1 uppercase tracking-wide flex items-center gap-2 text-center leading-tight">
+          🛒 Commander maintenant
+        </span>
+        <span className="text-[10px] md:text-[11px] font-bold text-[#bbf7d0] tracking-[2px] uppercase opacity-90 text-center">
+          Paiement à la livraison • Livraison rapide
+        </span>
+      </a>
+    </div>
   );
 };
 
@@ -61,8 +191,8 @@ export default function App() {
           <div className="w-8 h-8 rounded bg-brand-red flex items-center justify-center font-black text-white">AS</div>
           <span className="font-black text-lg tracking-wider text-brand-gold uppercase">African Solution</span>
         </div>
-        <a href={WA_LINK} className="bg-[#25D366] text-white p-2 rounded-full shadow-lg pulse-animation">
-          <MessageCircle className="w-5 h-5" />
+        <a href={NEW_ORDER_LINK} className="bg-gradient-to-r from-[#166534] to-[#14532d] border border-[#4ade80]/30 text-white px-4 py-2 rounded-lg shadow-lg animate-breathe font-bold text-xs uppercase tracking-wider flex items-center gap-2">
+          🛒 Commander
         </a>
       </header>
 
@@ -107,12 +237,9 @@ export default function App() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="w-full max-w-md"
+            className="w-full max-w-md mt-6"
           >
-            <ButtonWA text="Commander Maintenant" variant="red" />
-            <div className="flex items-center justify-center gap-2 mt-4 text-sm text-gray-400 font-medium">
-              <CheckCircle2 className="w-4 h-4 text-brand-gold" /> Stock Limité - Livraison Rapide
-            </div>
+            <ButtonOrder />
           </motion.div>
         </div>
       </section>
@@ -202,7 +329,7 @@ export default function App() {
           ))}
         </div>
         <div className="mt-12 w-full max-w-md mx-auto">
-          <ButtonWA text="Je veux retrouver mon énergie" />
+          <ButtonOrder />
         </div>
       </Section>
 
@@ -244,35 +371,7 @@ export default function App() {
       {/* TESTIMONIALS SLIDER */}
       <Section className="overflow-hidden">
         <SectionTitle gold>Des Hommes Satisfaits</SectionTitle>
-        <div className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar space-x-4 pb-8 -mx-4 px-4">
-          {[
-            { name: "Marc, 34 ans", city: "Brazzaville", text: "J'étais toujours fatigué après le travail. Depuis que je prends ce thé, j'ai retrouvé mon énergie de jeunesse.", rating: 5 },
-            { name: "Jean-Claude, 42 ans", city: "Kinshasa", text: "Très efficace. Je le recommande publiquement à tous les hommes qui ressentent une baisse de régime.", rating: 5 },
-            { name: "Eric, 39 ans", city: "Pointe-Noire", text: "Le goût est agréable et les effets sont réels. J'ai repris confiance en moi, fini la honte.", rating: 5 },
-            { name: "Fabrice, 48 ans", city: "Dolisie", text: "C'est devenu ma routine du matin. Ça m'aide énormément pour la concentration et le physique.", rating: 4 }
-          ].map((item, i) => (
-            <div key={i} className="min-w-[85vw] md:min-w-[350px] snap-center bg-brand-dark border border-[#333] p-6 rounded-[24px] flex-shrink-0 relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-4 opacity-5">
-                <MessageCircle className="w-20 h-20" />
-              </div>
-              <div className="flex text-brand-gold mb-3">
-                {[...Array(item.rating)].map((_, j) => <StarIcon key={j} />)}
-              </div>
-              <p className="text-gray-300 italic mb-6 relative z-10 font-medium leading-relaxed">
-                "{item.text}"
-              </p>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-brand-red rounded-full flex items-center justify-center font-bold font-serif text-white">
-                  {item.name.charAt(0)}
-                </div>
-                <div>
-                  <p className="font-bold text-white">{item.name}</p>
-                  <p className="text-sm text-gray-500">{item.city}</p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        <TestimonialSlider />
       </Section>
 
       {/* EXPERT SECTION */}
@@ -313,7 +412,7 @@ export default function App() {
               <li className="flex items-center gap-2 text-sm"><CheckCircle2 className="w-4 h-4 text-brand-red" /> regain d'énergie initial</li>
               <li className="flex items-center gap-2 text-sm"><CheckCircle2 className="w-4 h-4 text-brand-red" /> diminution de la fatigue</li>
             </ul>
-            <ButtonWA text="Commander x1" className="text-sm" />
+            <ButtonOrder />
           </div>
 
           {/* Pack 2 - Highlight */}
@@ -331,7 +430,7 @@ export default function App() {
               <li className="flex items-center gap-2 text-sm font-medium"><CheckCircle2 className="w-4 h-4 text-brand-gold" /> Vitalité constante toute la journée</li>
               <li className="flex items-center gap-2 text-sm font-medium"><CheckCircle2 className="w-4 h-4 text-brand-gold" /> Effets prolongés</li>
             </ul>
-            <ButtonWA text="Commander x2" />
+            <ButtonOrder />
           </div>
 
           {/* Pack 3 */}
@@ -346,7 +445,7 @@ export default function App() {
               <li className="flex items-center gap-2 text-sm"><CheckCircle2 className="w-4 h-4 text-brand-red" /> Énergie d'un homme de 20 ans</li>
               <li className="flex items-center gap-2 text-sm"><CheckCircle2 className="w-4 h-4 text-brand-red" /> Système immunitaire blindé</li>
             </ul>
-            <ButtonWA text="Commander x3" className="text-sm" />
+            <ButtonOrder />
           </div>
         </div>
       </Section>
@@ -362,18 +461,19 @@ export default function App() {
       </footer>
 
       {/* FLOATING MOBILE CTA */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-brand-dark/95 backdrop-blur-md border-t border-white/10 z-50 md:hidden">
-         <ButtonWA text="Commander via WhatsApp" className="shadow-[0_-5px_20px_rgba(37,211,102,0.2)] text-base" />
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-brand-black/95 backdrop-blur-md border-t border-brand-gold/20 z-50 md:hidden">
+         <ButtonOrder />
       </div>
       
       {/* FLOATING DESKTOP BUTTON */}
       <a 
-        href={WA_LINK} 
+        href={NEW_ORDER_LINK} 
         target="_blank"
         rel="noopener noreferrer"
-        className="hidden md:flex fixed bottom-8 right-8 z-50 bg-[#25D366] text-white p-4 rounded-full shadow-[0_4px_20px_rgba(37,211,102,0.4)] hover:scale-110 transition-transform pulse-animation"
+        className="hidden md:flex fixed bottom-8 right-8 z-50 bg-gradient-to-r from-[#166534] to-[#14532d] border border-[#4ade80]/30 text-white px-8 py-4 rounded-[16px] shadow-[0_6px_0_#064e3b,0_15px_30px_rgba(22,101,52,0.4)] hover:translate-y-[2px] hover:shadow-[0_4px_0_#064e3b,0_10px_20px_rgba(22,101,52,0.4)] active:translate-y-[6px] active:shadow-[0_0px_0_#064e3b,0_0px_0_rgba(22,101,52,0)] transition-all animate-breathe font-black text-xl uppercase tracking-widest items-center gap-3 overflow-hidden group"
       >
-        <MessageCircle className="w-8 h-8" />
+        <div className="absolute top-0 left-0 bg-gradient-to-r from-transparent via-white/30 to-transparent w-full h-full animate-shimmer" />
+        🛒 Commander
       </a>
 
     </div>
